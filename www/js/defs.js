@@ -23,6 +23,7 @@ export const DEFAULT_SETTINGS = {
     variant: 'a', // Befehlsfolge: a = Herstellertreiber (Endlosrolle), b = Minimalfolge
     density: 0, // 0 = Druckervorgabe, 1 hell, 2 mittel, 3 dunkel
     feed: 3, // Vorschub nach dem Druck (Zeilen)
+    tail: 20, // weißer Nachlauf in mm, damit das Blattende bis zur Abrisskante herauskommt
     threshold: 150,
   },
   update: { repo: 'onetoner/Druck-PDF', lastCheck: 0 },

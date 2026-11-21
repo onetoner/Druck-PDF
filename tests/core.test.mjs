@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 globalThis.self = globalThis;
 await import('../www/vendor/pdf-lib.min.js');
 const { layoutDoc, endabnahmeRows } = await import('../www/js/layout.js');
-const { renderPdf, toMono, buildM832Job, toBase64 } = await import('../www/js/render.js');
+const { renderPdf, toMono, padMono, buildM832Job, toBase64 } = await import('../www/js/render.js');
 const { DEFAULT_SETTINGS, newData, AREAS, areaRows, fileName, TYPES } = await import('../www/js/defs.js');
 const { clean, wrap, textWidth, hoursBetween, deDate, weekday } = await import('../www/js/sheet.js');
 
@@ -89,6 +89,11 @@ test('Raster und M832-Befehlsfolge', () => {
   assert.deepEqual([...big.slice(7, 15)], [0x1d, 0x76, 0x30, 0x00, 0x36, 0x01, 0xb3, 0x0d]);
   assert.throws(() => buildM832Job({ width: 8, height: 70000, bytesPerRow: 1, data: new Uint8Array(70000) }, {}));
   assert.equal(toBase64(new Uint8Array([1, 2, 3])), 'AQID');
+  // Nachlauf: weiße Zeilen am Ende
+  const padded = padMono(mono, 3);
+  assert.equal(padded.height, 5);
+  assert.deepEqual([...padded.data], [0b11100000, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+  assert.equal(padMono(mono, 0), mono);
 });
 
 test('Plugin-Quelle und Prepare-Skript passen zusammen', async () => {

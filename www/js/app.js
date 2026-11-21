@@ -1,7 +1,7 @@
 // Oberfläche: Start, Editor mit Vorschau, Einstellungen.
 import { TYPES, MEDIEN, GRUENDE_NOT, GRUENDE_PLAN, BEREICHE, ANLAESSE, STATUS, AREAS, areaRows, areaTitle, visibleAreas, newData, docTitle, fileName } from './defs.js';
 import { layoutDoc, docImages } from './layout.js';
-import { loadAssets, renderPdf, renderCanvas, canvasToMono, buildM832Job } from './render.js';
+import { loadAssets, renderPdf, renderCanvas, canvasToMono, padMono, buildM832Job } from './render.js';
 import { loadSettings, saveSettings, listDocs, putDoc, deleteDoc, newId } from './store.js';
 import * as native from './native.js';
 import { todayIso, nowTime, deDate } from './sheet.js';
@@ -565,7 +565,8 @@ async function buildThermoJob(doc) {
   const assets = await loadAssets(docImages(doc, S.settings));
   const dots = Math.max(8, Math.round((Number(pr.dots) || 2480) / 8) * 8);
   const canvas = renderCanvas(sheet, assets, 0, null, dots);
-  const mono = canvasToMono(canvas, Number(pr.threshold) || 150);
+  const tailMm = Math.max(0, Math.min(80, Number(pr.tail ?? 20) || 0));
+  const mono = padMono(canvasToMono(canvas, Number(pr.threshold) || 150), (tailMm * dots) / sheet.width);
   return { job: buildM832Job(mono, { variant: pr.variant, density: Number(pr.density) || 0, feed: Number(pr.feed) || 0 }), canvas, mono };
 }
 
@@ -697,7 +698,8 @@ function renderSettings() {
         h('div', { class: 'grid' },
           field('Druckbreite in Punkten', sInput(pr, 'dots', { type: 'number', inputmode: 'numeric' }), 'c6'),
           field('Schwärzung', select(pr, 'density', [[0, 'Vorgabe des Druckers'], [1, 'Hell'], [2, 'Mittel'], [3, 'Dunkel']]), 'c6'),
-          field('Vorschub nach dem Druck (Zeilen)', sInput(pr, 'feed', { type: 'number', inputmode: 'numeric' }), 'c6'),
+          field('Weißer Nachlauf bis zur Abrisskante (mm)', sInput(pr, 'tail', { type: 'number', inputmode: 'numeric' }), 'c6'),
+          field('Zusätzlicher Vorschub (Zeilen)', sInput(pr, 'feed', { type: 'number', inputmode: 'numeric' }), 'c6'),
           field('Befehlsfolge', select(pr, 'variant', [['a', 'A – Endlosrolle (Standard)'], ['b', 'B – Minimal (falls A nicht druckt)']]), 'c6'),
           field(null, toggle('Briefe und Aushänge nach Inhalt kürzen', () => pr.rollCut !== false, (v) => { pr.rollCut = v; settingsChanged(); }, 'spart Papier auf der Endlosrolle; aus = volle A4-Länge'))),
         h('p', { class: 'hint' }, 'M832: 2480 Punkte (300 dpi). M08F: 1728 Punkte (203 dpi). Der Drucker muss in den Android-Einstellungen gekoppelt sein.')),

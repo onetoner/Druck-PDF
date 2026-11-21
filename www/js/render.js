@@ -151,6 +151,15 @@ export function toMono(rgba, width, height, threshold = 150) {
   return { width, height, bytesPerRow, data };
 }
 
+/** Hängt weiße Zeilen an (Nachlauf bis zur Abrisskante). */
+export function padMono(mono, extraRows) {
+  const rows = Math.max(0, Math.round(extraRows));
+  if (!rows) return mono;
+  const data = new Uint8Array(mono.data.length + rows * mono.bytesPerRow);
+  data.set(mono.data, 0);
+  return { ...mono, height: mono.height + rows, data };
+}
+
 export function canvasToMono(canvas, threshold = 150) {
   const ctx = canvas.getContext('2d', { willReadFrequently: true });
   return toMono(ctx.getImageData(0, 0, canvas.width, canvas.height).data, canvas.width, canvas.height, threshold);
