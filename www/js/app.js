@@ -613,11 +613,13 @@ async function thermoPrint() {
   const copies = doc.type === 'endabnahme' || doc.type === 'termin' ? 1 : Math.max(1, doc.data.kopien || 1);
   const done = busy('Bereite Druck vor …');
   try {
-    const { job } = await buildThermoJob(doc);
+    const { job, mono } = await buildThermoJob(doc);
+    // Der Drucker schafft rund 10 mm/s; die Verbindung bleibt bis zum geschätzten Druckende offen
+    const holdMs = Math.round((mono.height / 110) * 1000) + 2500;
     for (let i = 0; i < copies; i++) {
       done();
       const d2 = busy(copies > 1 ? `Drucke Exemplar ${i + 1} von ${copies} …` : `Drucke auf ${S.settings.printer.name || 'Thermodrucker'} …`);
-      try { await native.printRaw(S.settings.printer.address, job); } finally { d2(); }
+      try { await native.printRaw(S.settings.printer.address, job, holdMs); } finally { d2(); }
     }
     toast('An den Drucker gesendet');
   } catch (e) {

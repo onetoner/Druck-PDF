@@ -34,9 +34,9 @@ export async function listPrinters() {
 }
 
 /** Sendet einen fertigen Druckauftrag (Bytes) per Bluetooth. */
-export async function printRaw(address, bytes) {
+export async function printRaw(address, bytes, holdMs = 3000) {
   if (!isNative()) throw new Error('Thermodruck per Bluetooth funktioniert nur in der Android-App.');
-  return call('printRaw', { address, data: toBase64(bytes) });
+  return call('printRaw', { address, data: toBase64(bytes), holdMs });
 }
 
 /** Android-Druckdialog (WLAN-Drucker, "Als PDF speichern" …). */

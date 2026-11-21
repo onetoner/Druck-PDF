@@ -147,6 +147,9 @@ public class ZettelPlugin extends Plugin {
             call.reject("Bluetooth ist ausgeschaltet. Bitte einschalten und erneut versuchen.");
             return;
         }
+        // So lange bleibt die Verbindung nach dem Senden offen (geschätzte Druckdauer), damit nichts abgeschnitten wird.
+        Integer hold = call.getInt("holdMs", 3000);
+        final int holdMs = Math.max(1000, Math.min(180000, hold == null ? 3000 : hold));
         worker.execute(() -> {
             BluetoothSocket socket = null;
             try {
@@ -175,8 +178,8 @@ public class ZettelPlugin extends Plugin {
                     out.write(bytes, off, Math.min(chunk, bytes.length - off));
                 }
                 out.flush();
-                // Dem Drucker Zeit lassen, die letzten Zeilen auszugeben, bevor die Verbindung schließt.
-                Thread.sleep(3000);
+                // Die Daten liegen jetzt im Bluetooth-Puffer des Geräts. Verbindung erst schließen, wenn der Druck durch sein sollte.
+                Thread.sleep(holdMs);
                 JSObject result = new JSObject();
                 result.put("bytes", bytes.length);
                 call.resolve(result);

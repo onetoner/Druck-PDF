@@ -6,7 +6,7 @@ rem   apk                 laedt die neueste APK aus dem eigenen GitHub-Release n
 rem   shot <name>         Screenshot nach .tablet\<name>.png
 rem   logcat <name>       Geraete-Log nach .tablet\<name>.log
 rem   sleep <sekunden>
-rem   cdp                 fuehrt .tablet\cdp.js in der laufenden App aus (scripts\tablet-cdp.mjs, WebView-DevTools)
+rem   cdp [name]          fuehrt .tablet\<name>.js (Vorgabe cdp.js) in der laufenden App aus (scripts\tablet-cdp.mjs, WebView-DevTools)
 setlocal enabledelayedexpansion
 cd /d "%~dp0"
 if not exist .tablet mkdir .tablet
@@ -46,7 +46,7 @@ for /f "usebackq tokens=1,* delims= " %%a in (".tablet\cmds.txt") do (
   ) else if /i "%%a"=="sleep" (
     timeout /t %%b /nobreak >nul
   ) else if /i "%%a"=="cdp" (
-    node scripts\tablet-cdp.mjs >> %OUT% 2>&1
+    node scripts\tablet-cdp.mjs %%b >> %OUT% 2>&1
   ) else if /i "%%a"=="apk" (
     curl -L --fail -s -S -o ".tablet\app.apk" "https://github.com/onetoner/Druck-PDF/releases/latest/download/Zetteldruck.apk" >> %OUT% 2>&1
     for %%s in (".tablet\app.apk") do echo APK: %%~zs Bytes >> %OUT%

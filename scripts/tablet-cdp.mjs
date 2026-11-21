@@ -32,7 +32,7 @@ try {
   };
   const send = (method, params = {}) => new Promise((res) => { const id = ++seq; pending.set(id, res); ws.send(JSON.stringify({ id, method, params })); });
   await send('Runtime.enable');
-  const code = fs.readFileSync('.tablet/cdp.js', 'utf8');
+  const code = fs.readFileSync(`.tablet/${(process.argv[2] || 'cdp').replace(/[^\w-]/g, '')}.js`, 'utf8');
   const timeout = new Promise((res) => setTimeout(() => res({ timeout: true }), Number(process.env.CDP_TIMEOUT || 150000)));
   const reply = await Promise.race([send('Runtime.evaluate', { expression: `(async () => {\n${code}\n})()`, awaitPromise: true, returnByValue: true, userGesture: true }), timeout]);
   if (reply.timeout) console.log('ERGEBNIS: Zeitüberschreitung');
