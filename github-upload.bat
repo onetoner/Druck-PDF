@@ -17,11 +17,7 @@ if not exist .git (
   git remote add origin %REPO% || goto :fehler
   rem Liegt auf GitHub schon ein Stand, darauf aufsetzen; eigene Aenderungen bleiben als Aenderungen erhalten
   git fetch origin main >nul 2>nul
-  if not errorlevel 1 (
-    git reset origin/main >nul
-    rem Die Build-Anleitung fuer GitHub liegt nur im Repository - lokal nachziehen statt loeschen
-    if not exist .github\workflows\android-apk.yml git checkout origin/main -- .github
-  )
+  if not errorlevel 1 git reset origin/main >nul
 )
 
 for /f "delims=" %%n in ('git config user.name') do set GITNAME=%%n
@@ -29,6 +25,10 @@ if not defined GITNAME (
   git config user.name "onetoner"
   git config user.email "49093807+onetoner@users.noreply.github.com"
 )
+
+rem Build-Anleitung fuer GitHub Actions an ihren Platz kopieren (Vorlage: scripts\github-workflow.yml)
+if not exist .github\workflows mkdir .github\workflows
+copy /y scripts\github-workflow.yml .github\workflows\android-apk.yml >nul || goto :fehler
 
 git add -A || goto :fehler
 git diff --cached --quiet

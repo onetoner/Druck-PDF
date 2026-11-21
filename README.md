@@ -52,8 +52,10 @@ beim Start nach einer neueren Version (auch unter Einstellungen → „Nach Upda
 
 **Wichtig – Signatur dauerhaft machen:** Damit sich die App immer ohne Deinstallation aktualisieren
 lässt (sonst gehen die gespeicherten Dokumente verloren), den Signatur-Schlüssel einmalig als
-Repository-Secret `DEBUG_KEYSTORE_BASE64` hinterlegen (Settings → Secrets and variables → Actions).
-Ohne Secret liegt der Schlüssel nur im Actions-Cache, der nach 7 Tagen ohne Build verfällt.
+Repository-Secret `DEBUG_KEYSTORE_BASE64` hinterlegen: auf GitHub unter Settings → Secrets and
+variables → Actions → „New repository secret“, als Wert den Inhalt von
+`signatur/DEBUG_KEYSTORE_BASE64.txt` aus dem Projektordner einfügen (der Ordner `signatur/` wird nicht
+hochgeladen). Ohne Secret liegt der Schlüssel nur im Actions-Cache, der nach 7 Tagen ohne Build verfällt.
 
 ## Entwicklung
 
@@ -66,7 +68,7 @@ www/                 Web-App (ohne Build-Schritt)
   js/native.js       Brücke zum Android-Teil
 native/ZettelPlugin.java   Bluetooth-Druck, Druckdialog, Teilen, Speichern
 scripts/android-prepare.mjs   passt das Capacitor-Projekt beim Build an
-.github/workflows/android-apk.yml   APK-Build und Release
+scripts/github-workflow.yml   APK-Build und Release (github-upload.bat kopiert die Datei nach .github/workflows/)
 ```
 
 - `vorschau-am-pc.bat` startet die App im Browser (ohne Bluetooth).
