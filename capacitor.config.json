@@ -1,0 +1,10 @@
+{
+  "appId": "de.onetoner.zetteldruck",
+  "appName": "Zetteldruck",
+  "webDir": "www",
+  "backgroundColor": "#16202b",
+  "android": {
+    "backgroundColor": "#16202b",
+    "allowMixedContent": false
+  }
+}

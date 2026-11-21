@@ -1,0 +1,11 @@
+{
+  "name": "zetteldruck",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Zetteldruck – Mieterbenachrichtigungen, Aushänge und Endabnahme-Protokolle als Thermodruck und PDF (Android)",
+  "type": "module",
+  "scripts": {
+    "test": "node --test tests/core.test.mjs",
+    "start": "node scripts/serve.mjs"
+  }
+}
