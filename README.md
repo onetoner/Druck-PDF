@@ -50,12 +50,11 @@ Als Ausweichweg funktioniert immer „PDF teilen“ an die Phomemo-App.
 Jeder Upload nach GitHub baut automatisch eine neue APK und legt sie als Release ab. Die App sucht
 beim Start nach einer neueren Version (auch unter Einstellungen → „Nach Update suchen“).
 
-**Wichtig – Signatur dauerhaft machen:** Damit sich die App immer ohne Deinstallation aktualisieren
-lässt (sonst gehen die gespeicherten Dokumente verloren), den Signatur-Schlüssel einmalig als
-Repository-Secret `DEBUG_KEYSTORE_BASE64` hinterlegen: auf GitHub unter Settings → Secrets and
-variables → Actions → „New repository secret“, als Wert den Inhalt von
-`signatur/DEBUG_KEYSTORE_BASE64.txt` aus dem Projektordner einfügen (der Ordner `signatur/` wird nicht
-hochgeladen). Ohne Secret liegt der Schlüssel nur im Actions-Cache, der nach 7 Tagen ohne Build verfällt.
+**Signatur:** Alle APKs ab Build 4 sind mit demselben Schlüssel signiert, deshalb lassen sich Updates
+ohne Deinstallation einspielen und die gespeicherten Dokumente bleiben erhalten. Der Schlüssel liegt
+als Repository-Secret `DEBUG_KEYSTORE_BASE64` auf GitHub und als Sicherung im Projektordner unter
+`signatur/` (wird nicht hochgeladen – bitte aufbewahren). `signatur-eintragen.bat` hinterlegt ihn
+erneut, falls das Repository einmal neu angelegt wird (braucht die GitHub-Kommandozeile `gh`).
 
 ## Entwicklung
 
@@ -73,6 +72,7 @@ scripts/github-workflow.yml   APK-Build und Release (github-upload.bat kopiert d
 
 - `vorschau-am-pc.bat` startet die App im Browser (ohne Bluetooth).
 - `github-upload.bat` lädt den aktuellen Stand hoch und stößt den APK-Build an.
+- `tablet-test.bat` installiert und prüft die App auf einem per USB angeschlossenen Gerät (Befehle in `.tablet\cmds.txt`).
 - `npm test` prüft Layout, PDF und Druckdaten.
 
 ## Quellen
